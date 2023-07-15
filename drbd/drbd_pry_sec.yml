@@ -1,0 +1,16 @@
+- name: подготовка сервера DRBD 
+  hosts: drbd
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: переключение с узла на узел
+      ansible.builtin.shell:
+      На мастере
+      1. umount /tmp/DRBD_PRY/
+      2. drbdadm secondary data1
+      На секондари
+      3. drbdadm prymary data1
+      4. mount /dev/drbd0 /tmp/DRBD_SEC/
+  
+  * если узел упал, то на втором узле нужно выполнить действия по переводу узла в праймари и смотировать виртуальное устройство 
+  после подъема упавшего узла нужно выполнить команду drbdadm up data1  команда drbdadm status data1 проверки статуса покажет что данный узел secondary

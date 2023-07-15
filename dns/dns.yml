@@ -1,0 +1,39 @@
+- name: подготовка сервера dns 
+  hosts: dns
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+    - name: del packeg bind
+      package:
+        state: absent
+        name: bind
+    - name: установка прикладных пакетов (CentOS)
+      package:
+        name: "{{ pkg }}"
+        state: present
+      loop:  
+      - bind-utils 
+      - bind
+      loop_control:
+        loop_var: pkg
+    - name: копирование файла настроек на сервер
+      ansible.builtin.copy:
+        src: ~/education2/ansible/dns/named.conf
+        dest: /etc/named.conf
+    - name: копирование файла настроек на сервер
+      ansible.builtin.copy:
+        src: ~/education2/ansible/dns/named.home.education2
+        dest:  /etc/named/named.home.education2
+    - name: проверка стауса сервиса bind service - named
+      ansible.builtin.systemd:
+        state: started
+        name: named
+      register: status_bind_named
+    - name: разрешить автозапуск сервиса 
+      ansible.builtin.shell: systemctl enable named
+    - name: print state 
+      ansible.builtin.debug:
+        var: status_bind_named.state, status_bind_named.status.Result
+ 

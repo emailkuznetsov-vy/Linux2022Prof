@@ -1,0 +1,28 @@
+- name: подготовка сервера apache
+  hosts: apache2.home.education2
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+#    - name: stop
+#      asible.builtin.shell: systemctl stop httpd; systemctl disable httpd
+    - name: del packeg httpd
+      package:
+        state: absent
+        name: httpd
+    - name: установка прикладных пакетов (CentOS)
+      package:
+        name: "{{ pkg }}"
+        state: present
+      loop:  
+      - httpd
+      - httpd-tools
+      loop_control:
+        loop_var: pkg
+ #   - name: копирование файла настроек на сервер
+ #     ansible.builtin.copy:
+ #       src: ~/education2/ansible/apache/wp.conf
+ #       dest: /etc/httpd/conf.d/
+    - name: start
+      ansible.builtin.shell: systemctl start httpd; systemctl enable httpd; systemctl status httpd

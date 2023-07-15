@@ -1,0 +1,27 @@
+- name: подготовка сервера mysql
+  hosts: mysql
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+    - name: del packeg mysqld
+      package:
+        state: absent
+        name: mysqld
+    - name: del packeg mysql80-community-release-el7-7.noarch.rpm*
+      package:
+        state: absent
+        name: mysql80-community-release-el7-7
+    - name: копирование файла на сервер
+      ansible.builtin.shell:  wget -P /home/vladimir/distr/ https://dev.mysql.com/get/mysql80-community-release-el7-7.noarch.rpm; rpm -Uvh /home/vladimir/distr/mysql80-community-release-el7-7.noarch.rpm;
+    - name: установка прикладных пакетов (CentOS)
+      package:
+        name: "{{ pkg }}"
+        state: present
+      loop:
+      - mysql-community-server
+      loop_control:
+        loop_var: pkg
+    - name: start
+      ansible.builtin.shell: systemctl start mysqld; systemctl enable mysqld; systemctl status mysqld

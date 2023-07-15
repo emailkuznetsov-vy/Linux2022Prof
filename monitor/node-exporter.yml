@@ -1,0 +1,34 @@
+- name: установка node-exporter
+  hosts: all
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+    - name: create directory node-exporter
+      ansible.builtin.file:
+        path: /usr/local/bin/node-exporter
+        state: directory
+        mode: o+rwx
+    - name: Add the user nodeusr
+      ansible.builtin.user:
+        name: nodeusr
+        create_home: false
+    - name: copy
+      ansible.builtin.copy:
+        src: ~/education2/ansible/monitor/node_exporter
+        dest:  /usr/local/bin/node-exporter/
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+        path: /usr/local/bin/node-exporter
+        state: directory
+        recurse: yes
+        owner: nodeusr
+        group: nodeusr
+        mode: ugo+rwx   
+    - name: copy
+      ansible.builtin.copy:
+        src: ~/education2/ansible/monitor/node_exporter.service
+        dest:  /etc/systemd/system/   
+    - name: start
+      ansible.builtin.shell: systemctl daemon-reload; systemctl enable node_exporter; systemctl start node_exporter; systemctl status node_exporter

@@ -1,0 +1,22 @@
+$TTL 3600
+$ORIGIN home.education2.
+@		IN		SOA 	dns1.home.education2.  root.home.education2. (
+					2711201407 ; serial
+					3600       ; refresh (1 hour)
+					600        ; retry (10 minutes)
+					86400      ; expire (1 day)
+					600 	   ; minimum (10 minutes)
+					)
+
+		IN		NS 	dns1.home.education2.
+; DNS Servers
+dns1		IN		A	10.0.2.5
+nginx           IN              A       10.0.2.15
+manager         IN              A       10.0.2.4
+apache1         IN              A       10.0.2.6
+apache2         IN              A       10.0.2.7
+mysql1          IN              A       10.0.2.12 
+mysql2          IN              A       10.0.2.13
+drbd1           IN              A       10.0.2.8
+drbd2           IN              A       10.0.2.9
+monitor         IN              A       10.0.2.16

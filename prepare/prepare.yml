@@ -1,0 +1,30 @@
+- name: prepare server
+  hosts: all
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: prepare server
+      ansible.builtin.shell:
+        cmd: timedatectl set-timezone Europe/Moscow; timedatectl set-ntp 0; timedatectl set-time '2023-07-12 17:01:00';  timedatectl set-ntp 1; systemctl stop firewalld; systemctl disable firewalld; setenforce 0
+    - name: selinux disable
+      ansible.builtin.replace:
+        path: /etc/selinux/config
+        regexp: 'SELINUX=enforcing$'
+        replace: 'SELINUX=disabled'
+    - name: обновление пакетов ОС (CentOS)
+      ansible.builtin.yum:
+        update_cache: true
+        name: '*'
+    - name: установка прикладных пакетов (CentOS)
+      package:
+        name: "{{ pkg }}"
+        state: present
+      loop:  
+      - epel-release
+      - wget
+      - yum-utils
+      - vim
+      - chrony
+       loop_control:
+        loop_var: pkg
+

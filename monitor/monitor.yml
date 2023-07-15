@@ -1,0 +1,37 @@
+- name: подготовка сервера monitor
+  hosts: monitor
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+    - name: clean packeges is not dependens
+      ansible.builtin.shell: yum erase docker; yum clean all
+    - name: del packeg docker
+      package:
+        name: "{{ pkg }}"
+        state: absent
+      loop:
+      - docker-ce 
+      - docker-ce-cli
+      - containerd.io 
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      loop_control:
+        loop_var: pkg
+    - name: add repository
+      ansible.builtin.shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+    - name: установка прикладных пакетов (CentOS)
+      package:
+        name: "{{ pkg }}"
+        state: present
+      loop:
+      - docker-ce 
+      - docker-ce-cli
+      - containerd.io 
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      loop_control:
+        loop_var: pkg
+    - name: start
+      ansible.builtin.shell: systemctl start docker; systemctl enable docker; systemctl status docker

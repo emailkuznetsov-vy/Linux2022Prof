@@ -1,0 +1,30 @@
+- name: подготовка сервера nginx
+  hosts: nginx
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+    - name: del packeg nginx
+      package:
+        state: absent
+        name: nginx
+    - name: установка прикладных пакетов (CentOS)
+      package:
+        name: "{{ pkg }}"
+        state: present
+      loop:  
+      - nginx
+#yum -y install http://rpms.remirepo.net/enterprise/remi-release-7.rpm; yum-config-manager --enable remi-php73; yum -y install php php-common php-opcache php-mcrypt php-cli php-gd php-curl php-mysqlnd; php -v
+      loop_control:
+        loop_var: pkg
+    - name: копирование файла настроек на сервер
+      ansible.builtin.copy:
+        src: ~/education2/ansible/nginx/nginx.conf
+        dest: /etc/nginx/
+    - name: копирование файла настроек на сервер
+      ansible.builtin.copy:
+        src: ~/education2/ansible/nginx/nginx-server-apache.conf
+        dest: /etc/nginx/conf.d/
+    - name: start
+      ansible.builtin.shell: systemctl start nginx; systemctl enable nginx; systemctl status nginx

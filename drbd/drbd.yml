@@ -1,0 +1,43 @@
+- name: подготовка сервера dns 
+  hosts: drbd
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+ #   - name: del packeg drbd
+ #     package:
+ #       state: absent
+ #       name: drbd
+    - name: установка репозитория
+      ansible.builtin.yum:  
+        name: https://www.elrepo.org/elrepo-release-7.el7.elrepo.noarch.rpm
+        state: present
+    - name: установка прикладных пакетов (CentOS)
+      package:
+        name: "{{ pkg }}"
+        state: present
+      loop:  
+      - drbd84-utils
+      - kmod-drbd84
+      loop_control:
+        loop_var: pkg
+    - name: удаление файла конфигурации на обоих узлах
+      ansible.builtin.file:
+        path: /etc/drbd.d/data1
+        state: absent
+    - name: копирование файла конфигурации на оба узла
+      ansible.builtin.copy:
+        src: /home/vladimir/education2/ansible/drbd/data1.res
+        dest: /etc/drbd.d/data1.res
+    - name: отключить модуль drbd ядра 
+      ansible.builtin.shell: rmmod /usr/lib/modules/3.10.0-1127.el7.x86_64/extra/drbd84/drbd.ko
+  #   необходимо подключить модуль drbd
+    - name: необходимо подключить модуль drbd ядра 
+      ansible.builtin.shell: insmod /usr/lib/modules/3.10.0-1127.el7.x86_64/extra/drbd84/drbd.ko
+  #  - name: создать мета диск
+  #    ansible.builtin.shell: drbdadm create-md data1; drbdadm up data1; drbdadm status data1; drbdadm primary --force data1; mkfs -t ext4 /dev/drbd0; mkdir -p /tmp/DRBD_PRI/; mount /dev/drbd0 /tmp/DRBD_RRI/
+
+        
+
+ 

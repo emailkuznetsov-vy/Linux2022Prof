@@ -1,0 +1,9 @@
+- name: установка node-exporter
+  hosts: drbd1.home.education2
+  become: yes
+  remote_user: vladimir
+  tasks:
+   - name: copy is repository drbd
+     ansible.builtin.fetch:
+        src:  /mnt/drbd_p/node-exporter/node_exporter-1.4.0-rc.0.linux-amd64/node_exporter
+        dest: ~/education2/ansible/monitor

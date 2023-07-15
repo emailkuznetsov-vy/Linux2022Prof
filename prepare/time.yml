@@ -1,0 +1,8 @@
+- name: prepare server
+  hosts: all
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: установка времени на серверах
+      ansible.builtin.shell:
+        cmd: hwclock --set --date "15 Jul 2023 12:49"; date 07151249

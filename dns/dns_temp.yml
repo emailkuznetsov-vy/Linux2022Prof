@@ -1,0 +1,11 @@
+- name: подготовка сервера dns 
+  hosts: dns
+  become: yes
+  remote_user: vladimir
+  tasks:
+    - name: проверка доступности серверов
+      ansible.builtin.ping:
+    - name: del packeg bind
+      package:
+        state: absent
+        name: bind

@@ -1,0 +1,16 @@
+    - name: копирование файла настроек на сервер
+      ansible.builtin.copy:
+        src: ~/education2/ansible/dns/named.conf
+        dest: /etc/named.conf
+    - name: копирование файла настроек на сервер
+      ansible.builtin.copy:
+        src: ~/education2/ansible/dns/named.home.education2
+        dest:  /etc/named/named.home.education2
+    - name: проверка стауса сервиса bind service - named
+      ansible.builtin.systemd:
+        state: started
+        name: named
+      register: status_bind_named
+    - name: print state 
+      ansible.builtin.debug:
+        var: status_bind_named.state, status_bind_named.status.Result
